@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Sockets</title>
+</head>
+<body>
+<h1>Hola Sockets</h1>
+<p id="txt">What is your Name?</p>
+<input type="text" id="name" onblur="showNext()" />
+<input type="text" id="age" onblur="showDetails()" hidden/>
+
+<div id="details" hidden>
+<b id="yourName"></b>
+<b id="yourAge"></b>
+<p>Is this correct?</p>
+<button onclick="yes()">Yes</button> <button>No</button>
+</div>
+
+
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+<script type="text/javascript" src="app/app.js"></script>
+</body>
+</html>
