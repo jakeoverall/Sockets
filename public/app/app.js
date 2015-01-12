@@ -1,5 +1,4 @@
 var socket = io.connect('http://localhost:8888/');
-
 var details = {
 	name: '',
 	age: ''
@@ -8,6 +7,16 @@ var details = {
 socket.on('welcomeMsg', function (data) {
 	console.log(data);
 	socket.emit('privateMsg', { msg: 'I have connected', from: 'The Client' });
+});
+
+socket.on('currentUsers', function(users){	
+	console.log("current users are: ", users);
+	document.getElementById('currentUsers').innerHTML = '';
+	users.forEach(function(u){
+		var user = document.createElement('li');
+		user.textContent = u.name;
+		document.getElementById('currentUsers').appendChild(user);
+	});
 });
 
 function showNext(){

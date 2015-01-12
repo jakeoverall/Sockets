@@ -9,9 +9,16 @@ var db = [{
 	name: 'Jake',
 	age: 29,
 	info: 'This should be private'
+},{
+	name: 'Jim',
+	age: 18,
+	info: 'This should be private'
 }];
 
+var currentUsers = [];
+
 var io = app.http().io();
+
 app.use(session({
 	secret: 'Shh, its a secret to everybody!',
 	resave: false,
@@ -25,11 +32,26 @@ app.use(express.static(__dirname + '/public'));
 
 app.io.on('connection', function(socket){
 
-	socket.emit('welcomeMsg', {welcomeMsg: 'Hello welcome to your socket connection', socket: socket.id});
-
-	app.io.route('privateMsg', function(req){
-		console.log(req.data.from, req.data.msg);
+var updateUsers = function(user){
+	var found = false;
+	currentUsers.forEach(function(u, i){
+		if(u.name === user.name){
+			found = true;
+			currentUsers.splice(i, 1);
+		}
 	});
+	if(!found){		
+		currentUsers.push(user);
+	}
+	console.log(currentUsers);
+	app.io.sockets.emit('currentUsers', currentUsers);
+};
+
+	socket.emit('welcomeMsg', {welcomeMsg: 'Hello welcome to your socket connection', socket: socket.id});
+	socket.emit('currentUsers', currentUsers);
+	// app.io.route('privateMsg', function(req){
+	// 	console.log(req.data.from, req.data.msg);
+	// });
 
 app.io.route('person', function(req){
 	var user = '';
@@ -37,6 +59,7 @@ app.io.route('person', function(req){
 		if(req.data.name === person.name && req.data.age == person.age){
 			console.log('Found');
 			user = person;
+			updateUsers(user);
 		}
 	});	
 	console.log(user, 'The User');
@@ -46,6 +69,10 @@ app.io.route('person', function(req){
 		socket.emit('error', {error: 'Your credentials were invalid'});
 	};
 	});
+
+socket.on('disconnect', function(){
+	console.log("A USER DISCONNECTED");
+})
 });
 
 app.listen(port, function(){
