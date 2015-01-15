@@ -14,6 +14,70 @@ var db = [{
 	age: 18,
 	info: 'This should be private'
 }];
+var currentGrid = [];
+var grid = [{
+	id: 0,
+	on: false,
+	neighbors: [1,4]
+},{
+	id: 1,
+	on: false,
+	neighbors: [0,2,5]
+},{
+	id: 2,
+	on: false,
+	neighbors: [1,3,6]
+},{
+	id: 3,
+	on: false,
+	neighbors: [2,7]
+},{
+	id: 4,
+	on: false,
+	neighbors: [0,5,8]
+},{
+	id: 5,
+	on: false,
+	neighbors: [4,2,6,9]
+},{
+	id: 6,
+	on: false,
+	neighbors: [5,3,7,10]
+},{
+	id: 7,
+	on: false,
+	neighbors: [6,3,11]
+},{
+	id: 8,
+	on: false,
+	neighbors: [4,9]
+},{
+	id: 9,
+	on: false,
+	neighbors: [8,5,10]
+},{
+	id: 10,
+	on: false,
+	neighbors: [9,6,11]
+},{
+	id: 11,
+	on: false,
+	neighbors: [10,7]
+}];
+
+var updateGame = function(){	
+	console.log("UPDATE GAME");
+	console.log(currentGrid);
+	app.io.sockets.emit('updateGame', currentGrid);
+};
+
+var reset = function(){
+	currentGrid = [];
+	grid.forEach(function(box){
+		currentGrid.push(box);	
+	});
+	updateGame();	
+};
 
 var currentUsers = [];
 
@@ -30,7 +94,10 @@ app.use(session({
 }));
 app.use(express.static(__dirname + '/public'));
 
+reset();
+
 app.io.on('connection', function(socket){
+updateGame();
 
 var updateUsers = function(user){
 	var found = false;
@@ -68,7 +135,21 @@ app.io.route('person', function(req){
 	} else {
 		socket.emit('error', {error: 'Your credentials were invalid'});
 	};
-	});
+});
+
+app.io.route('clicked', function(req){	
+	console.log(req.data);
+	var boxId = req.data;
+	currentGrid[boxId].on = !currentGrid[boxId].on;
+	for (var i = 0; i < currentGrid[boxId].neighbors.length; i++) {
+		currentGrid[currentGrid[boxId].neighbors[i]].on = !currentGrid[currentGrid[boxId].neighbors[i]].on;		
+	};
+	updateGame();	
+});
+
+app.io.route('reset', function(req){
+	reset();
+});
 
 socket.on('disconnect', function(){
 	console.log("A USER DISCONNECTED");

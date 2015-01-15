@@ -3,11 +3,12 @@ var details = {
 	name: '',
 	age: ''
 };
-
+var currentGrid = [];
 socket.on('welcomeMsg', function (data) {
 	console.log(data);
 	socket.emit('privateMsg', { msg: 'I have connected', from: 'The Client' });
 });
+var grid = document.getElementById('grid');
 
 socket.on('currentUsers', function(users){	
 	console.log("current users are: ", users);
@@ -44,3 +45,28 @@ socket.on('login', function(user){
 socket.on('error', function(err){
 	console.log(err);
 });
+
+socket.on('updateGame', function(grid){
+	console.log(grid);
+	currentGrid = grid;
+	drawGrid();
+});
+
+var drawGrid = function (){
+	grid.innerHTML = "";
+	for (var i = 0; i < currentGrid.length; i++) {
+		var b = document.createElement('div');
+		b.id = currentGrid[i].id;
+		b.className = "box";		
+		b.onclick = function(){
+			toggleBox(this.id);
+		};
+		if(currentGrid[i].on){
+			b.className = "box on";
+		}
+		grid.appendChild(b);
+	};
+};
+var toggleBox = function(id){
+	socket.emit('clicked', id);
+};

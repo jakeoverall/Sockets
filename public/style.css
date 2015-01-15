@@ -1,0 +1,25 @@
+.grid{
+	width: 600px;	
+	text-align: center;	
+	padding-top: 4px;
+	margin-left: 30%;
+}
+.box{
+	height: 146px;
+	width: 146px;
+	border: 2px solid #4c4c4c;
+	background-color: #000;		
+	float: left;
+	margin-top: -4px;
+	padding: 0px;
+}
+.box:hover{
+	cursor: pointer;
+	background-color: #3D2020;
+}
+.box.on{
+	background-color: rgb(255, 246, 157);
+	-webkit-box-shadow: 0px 0px 30px 0px rgba(236, 255, 224, 0.75);
+	-moz-box-shadow:    0px 0px 30px 0px rgba(236, 255, 224, 0.75);
+	box-shadow:         0px 0px 30px 0px rgba(236, 255, 224, 0.75);
+}
