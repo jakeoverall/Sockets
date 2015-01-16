@@ -14,60 +14,118 @@ var db = [{
 	age: 18,
 	info: 'This should be private'
 }];
+// var currentGrid = [];
+// var grid = [{
+// 	id: 0,
+// 	on: false,
+// 	neighbors: [1,4]
+// },{
+// 	id: 1,
+// 	on: false,
+// 	neighbors: [0,2,5]
+// },{
+// 	id: 2,
+// 	on: false,
+// 	neighbors: [1,3,6]
+// },{
+// 	id: 3,
+// 	on: false,
+// 	neighbors: [2,7]
+// },{
+// 	id: 4,
+// 	on: false,
+// 	neighbors: [0,5,8]
+// },{
+// 	id: 5,
+// 	on: false,
+// 	neighbors: [4,1,6,9]
+// },{
+// 	id: 6,
+// 	on: false,
+// 	neighbors: [5,2,7,10]
+// },{
+// 	id: 7,
+// 	on: false,
+// 	neighbors: [6,3,11]
+// },{
+// 	id: 8,
+// 	on: false,
+// 	neighbors: [4,9]
+// },{
+// 	id: 9,
+// 	on: false,
+// 	neighbors: [8,5,10]
+// },{
+// 	id: 10,
+// 	on: false,
+// 	neighbors: [9,6,11]
+// },{
+// 	id: 11,
+// 	on: false,
+// 	neighbors: [10,7]
+// }];
+var grid = [];
 var currentGrid = [];
-var grid = [{
-	id: 0,
-	on: false,
-	neighbors: [1,4]
-},{
-	id: 1,
-	on: false,
-	neighbors: [0,2,5]
-},{
-	id: 2,
-	on: false,
-	neighbors: [1,3,6]
-},{
-	id: 3,
-	on: false,
-	neighbors: [2,7]
-},{
-	id: 4,
-	on: false,
-	neighbors: [0,5,8]
-},{
-	id: 5,
-	on: false,
-	neighbors: [4,2,6,9]
-},{
-	id: 6,
-	on: false,
-	neighbors: [5,3,7,10]
-},{
-	id: 7,
-	on: false,
-	neighbors: [6,3,11]
-},{
-	id: 8,
-	on: false,
-	neighbors: [4,9]
-},{
-	id: 9,
-	on: false,
-	neighbors: [8,5,10]
-},{
-	id: 10,
-	on: false,
-	neighbors: [9,6,11]
-},{
-	id: 11,
-	on: false,
-	neighbors: [10,7]
-}];
+
+
+//0,0 bottom left
+var rows = 8;
+var cols = 8;
+for(var x=0; x<rows; x++){	
+	for(var y=0; y<cols; y++){
+		var id = x + ',' + y;
+		var box = {
+			id: id,
+			x: x,
+			y: y,
+			neighbors: [],
+			on: false
+		};
+		if(box.x < rows){
+			//top neighbor
+			box.neighbors.push({x: x+1, y: y});
+		}
+		if(box.y < cols){
+			//right neighbor
+			box.neighbors.push({x: x, y: y+1});
+		}
+		if(box.x > 0){
+			//bottom neighbor
+			box.neighbors.push({x: x-1, y: y});
+		}
+		if(box.y > 0){
+			//left neighbor
+			box.neighbors.push({x: x, y: y-1});
+		}		
+		grid.unshift(box);
+		console.log(box);
+	};	
+};
+
+// test.forEach(function(box, i){
+// 	if(i>0 || i<rows){
+// 		//Top neighbor should exist
+// 	}
+// 	if(i)
+// });
+// for(var r=0; r<rows*cols; r++){
+// 	for(var c=0; c<cols; c++){
+// 		if(r>0){
+// 			test[r].neighbors.push({x: r-1, y:c});
+// 		}
+// 		if (r < rows - 1) { // has south
+// 	     test[r].neighbors.push({x: r+1, y:c});
+// 	    }
+// 	    if (c > 0) {     // has west
+// 	      test[r].neighbors.push({x: r, y:c-1});
+// 	    }
+// 	    if (c < cols - 1) { // has east
+// 	      test[r].neighbors.push({x: r-1, y:c+1});
+// 	    }
+// 	};
+// };
 
 var updateGame = function(){	
-	console.log("UPDATE GAME");
-	console.log(currentGrid);
 	app.io.sockets.emit('updateGame', currentGrid);
 };
 
@@ -109,8 +167,7 @@ var updateUsers = function(user){
 	});
 	if(!found){		
 		currentUsers.push(user);
-	}
-	console.log(currentUsers);
+	}	
 	app.io.sockets.emit('currentUsers', currentUsers);
 };
 
@@ -123,13 +180,11 @@ var updateUsers = function(user){
 app.io.route('person', function(req){
 	var user = '';
 	db.forEach(function(person){		
-		if(req.data.name === person.name && req.data.age == person.age){
-			console.log('Found');
+		if(req.data.name === person.name && req.data.age == person.age){	
 			user = person;
 			updateUsers(user);
 		}
-	});	
-	console.log(user, 'The User');
+	});		
 	if (user) {
 		socket.emit('login', user);
 	} else {
@@ -138,12 +193,24 @@ app.io.route('person', function(req){
 });
 
 app.io.route('clicked', function(req){	
-	console.log(req.data);
 	var boxId = req.data;
-	currentGrid[boxId].on = !currentGrid[boxId].on;
-	for (var i = 0; i < currentGrid[boxId].neighbors.length; i++) {
-		currentGrid[currentGrid[boxId].neighbors[i]].on = !currentGrid[currentGrid[boxId].neighbors[i]].on;		
+	var box = '';
+	for (var i = 0; i < currentGrid.length; i++) {
+		if(currentGrid[i].id == boxId){
+			box = currentGrid[i];
+		}
 	};
+	if(box){
+		box.on = !box.on;
+		for (var i = 0; i < box.neighbors.length; i++) {
+			var neighborId = box.neighbors[i].x +','+ box.neighbors[i].y;
+			for (var j = 0; j < currentGrid.length; j++) {
+				if(currentGrid[j].id == neighborId){
+					currentGrid[j].on = !currentGrid[j].on;
+				}
+			};				
+		};
+	}
 	updateGame();	
 });
 

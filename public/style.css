@@ -1,8 +1,8 @@
 .grid{
-	width: 600px;	
+	width: 1200px;	
 	text-align: center;	
 	padding-top: 4px;
-	margin-left: 30%;
+	transform: scaleX(-1);	
 }
 .box{
 	height: 146px;
@@ -15,11 +15,14 @@
 }
 .box:hover{
 	cursor: pointer;
-	background-color: #3D2020;
+	background-color: #9BE5F5;	
+	-webkit-box-shadow: 0px 0px 30px 0px rgba(236, 255, 224, 0.3);
+	-moz-box-shadow:    0px 0px 30px 0px rgba(236, 255, 224, 0.3);
+	box-shadow:         0px 0px 30px 0px rgba(236, 255, 224, 0.3);
 }
 .box.on{
 	background-color: rgb(255, 246, 157);
-	-webkit-box-shadow: 0px 0px 30px 0px rgba(236, 255, 224, 0.75);
-	-moz-box-shadow:    0px 0px 30px 0px rgba(236, 255, 224, 0.75);
-	box-shadow:         0px 0px 30px 0px rgba(236, 255, 224, 0.75);
+	-webkit-box-shadow: 0px 0px 30px 0px rgba(236, 255, 224, 0.3);
+	-moz-box-shadow:    0px 0px 30px 0px rgba(236, 255, 224, 0.3);
+	box-shadow:         0px 0px 30px 0px rgba(236, 255, 224, 0.3);
 }
